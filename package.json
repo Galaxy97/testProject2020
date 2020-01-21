@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "eslint src/index.js && node src/index.js"
+    "start": "eslint app.js && node app.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,11 +17,15 @@
     "prettier": "^1.18.2"
   },
   "dependencies": {
-    "nanoid": "^2.1.6"
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
+    "koa-compose": "^4.1.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0"
   },
-  "husky": {    
-    "hooks": {      
-      "pre-commit": "echo Check your code && eslint src/index.js "   
-    }  
- }
+  "husky": {
+    "hooks": {
+      "pre-commit": "echo Check your code && eslint app.js "
+    }
+  }
 }
