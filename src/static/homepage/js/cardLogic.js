@@ -2,48 +2,55 @@
 /* eslint-disable no-loop-func */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-undef */
-const listItems = document.querySelectorAll('.list-item');
-const lists = document.querySelectorAll('.list');
+function cardLogic() {
+  const listItems = document.querySelectorAll('.list-item');
+  const lists = document.querySelectorAll('.list');
 
-let draggedItem = null;
+  let draggedItem = null;
 
-for (let i = 0; i < listItems.length; i++) {
-  const item = listItems[i];
+  for (let i = 0; i < listItems.length; i++) {
+    const item = listItems[i];
 
-  item.addEventListener('dragstart', () => {
-    draggedItem = item;
-    setTimeout(() => {
-      item.style.display = 'none';
-    }, 0);
-  });
-
-  item.addEventListener('dragend', () => {
-    setTimeout(() => {
-      draggedItem.style.display = 'block';
-      draggedItem = null;
-    }, 0);
-  });
-
-  for (let j = 0; j < lists.length; j++) {
-    const list = lists[j];
-
-    list.addEventListener('dragover', e => {
-      e.preventDefault();
+    item.addEventListener('dragstart', () => {
+      draggedItem = item;
+      setTimeout(() => {
+        item.style.display = 'none';
+      }, 0);
     });
 
-    list.addEventListener('dragenter', function(e) {
-      e.preventDefault();
-      this.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+    item.addEventListener('dragend', () => {
+      setTimeout(() => {
+        draggedItem.style.display = 'block';
+        draggedItem = null;
+      }, 0);
     });
 
-    list.addEventListener('dragleave', function() {
-      this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-    });
+    for (let j = 0; j < lists.length; j++) {
+      const list = lists[j];
 
-    list.addEventListener('drop', function() {
-      console.log('drop');
-      this.append(draggedItem);
-      this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-    });
+      list.addEventListener('dragover', e => {
+        e.preventDefault();
+      });
+
+      list.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+      });
+
+      list.addEventListener('dragleave', function() {
+        this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+      });
+
+      list.addEventListener('drop', function() {
+        console.log('drop');
+        if (draggedItem) {
+          const btn = Object.assign(this.lastElementChild);
+          this.lastElementChild.remove();
+          this.append(draggedItem);
+          this.append(btn);
+        }
+        this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+      });
+    }
   }
 }
