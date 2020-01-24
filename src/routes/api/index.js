@@ -40,14 +40,12 @@ router.post('/api/column', async ctx => {
 // create new card
 router.post('/api/card', async ctx => {
   try {
-    const {colomnID, text} = ctx.request.body;
+    const {colomnID, title, description} = ctx.request.body;
     // write in table colomns
     const res = await db.query(
-      `INSERT INTO cards(column_id,card_text) VALUES('${colomnID}','${text}') RETURNING card_id ;`,
+      `INSERT INTO cards(column_id,card_title,card_description) VALUES('${colomnID}','${title}','${description}') RETURNING card_id,created_at ;`,
     );
-    ctx.ok({
-      id: res.rows[0].card_id,
-    });
+    ctx.ok(res.rows[0]);
   } catch (err) {
     ctx.internalServerError(err);
   }

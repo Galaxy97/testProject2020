@@ -7,10 +7,21 @@ function createDivCard(cardInfo) {
   card.id = `card-${cardInfo.card_id}`;
   // eslint-disable-next-line no-use-before-define
   controlDiv(card);
+  // ----------------------------------- TITLE
   // eslint-disable-next-line no-undef
-  const textDiv = document.createElement('div');
-  card.append(textDiv);
-  textDiv.innerText = cardInfo.card_text;
+  const titleDiv = document.createElement('div');
+  card.append(titleDiv);
+  titleDiv.innerText = cardInfo.card_title;
+  // ----------------------------------- DESCRIPTION
+  // eslint-disable-next-line no-undef
+  const descriptionDiv = document.createElement('div');
+  card.append(descriptionDiv);
+  descriptionDiv.innerText = cardInfo.card_description;
+  // ----------------------------------- CREATE_AT
+  // eslint-disable-next-line no-undef
+  const date = document.createElement('div');
+  card.append(date);
+  date.innerText = new Date(cardInfo.created_at).toLocaleString().slice(0, 10);
   // eslint-disable-next-line no-undef
   cardLogic(card);
   return card;
@@ -28,6 +39,11 @@ function createNewCard(colomn) {
     addButton.remove();
     // ----------------------------------------------- create textarea
     // eslint-disable-next-line no-undef
+    const title = document.createElement('textarea');
+    card.append(title);
+    title.placeholder = 'input some title';
+    // ----------------------------------------------- create textarea
+    // eslint-disable-next-line no-undef
     const place = document.createElement('textarea');
     card.append(place);
     place.placeholder = 'input some text';
@@ -39,16 +55,24 @@ function createNewCard(colomn) {
     save.innerText = 'Save it';
     save.onclick = () => {
       card.innerHTML = '';
+      title.value = title.value || title.placeholder;
       place.value = place.value || place.placeholder;
       // eslint-disable-next-line no-undef
       axios
         .post('/api/card', {
           colomnID: colomn.id.slice(4),
-          text: place.value,
+          title: title.value,
+          description: place.value,
         })
         .then(res => {
-          console.log(res);
-          card.append(createDivCard({card_text: place.value})); // return div with card
+          card.append(
+            createDivCard({
+              card_id: res.data.card_id,
+              card_title: title.value,
+              card_description: place.value,
+              created_at: res.data.created_at,
+            }),
+          ); // return div with card
           createNewCard(colomn);
         })
         .catch(e => {
@@ -74,7 +98,7 @@ function showNewColomn(col) {
   const colomn = document.createElement('div');
   listsDiv.append(colomn);
   colomn.className = 'list';
-  colomn.id = col.id;
+  colomn.id = `col-${col.id}`;
   // eslint-disable-next-line no-undef
   columnLogic(colomn);
   // eslint-disable-next-line no-undef
@@ -198,7 +222,7 @@ function showColomn(columnInfo, cards) {
   if (cards) {
     cards.forEach(card => {
       const divCard = createDivCard(card);
-      controlDiv(divCard);
+      // controlDiv(divCard);
       column.append(divCard);
     });
   }
