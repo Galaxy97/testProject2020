@@ -2,55 +2,66 @@
 /* eslint-disable no-loop-func */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-undef */
-function cardLogic() {
-  const listItems = document.querySelectorAll('.list-item');
-  const lists = document.querySelectorAll('.list');
+// eslint-disable-next-line no-unused-vars
+let draggedItem = null;
+// eslint-disable-next-line no-unused-vars
+function cardLogic(item) {
+  item.addEventListener('dragstart', () => {
+    draggedItem = item;
+    setTimeout(() => {
+      // eslint-disable-next-line no-param-reassign
+      item.style.display = 'none';
+    }, 0);
+  });
 
-  let draggedItem = null;
+  item.addEventListener('dragend', () => {
+    setTimeout(() => {
+      draggedItem.style.display = 'block';
+      draggedItem = null;
+    }, 0);
+  });
+}
 
-  for (let i = 0; i < listItems.length; i++) {
-    const item = listItems[i];
+// eslint-disable-next-line no-unused-vars
+function columnLogic(list) {
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+  });
 
-    item.addEventListener('dragstart', () => {
-      draggedItem = item;
-      setTimeout(() => {
-        item.style.display = 'none';
-      }, 0);
-    });
+  list.addEventListener('dragenter', function(e) {
+    e.preventDefault();
+    this.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+  });
 
-    item.addEventListener('dragend', () => {
-      setTimeout(() => {
-        draggedItem.style.display = 'block';
-        draggedItem = null;
-      }, 0);
-    });
+  list.addEventListener('dragleave', function() {
+    this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+  });
 
-    for (let j = 0; j < lists.length; j++) {
-      const list = lists[j];
+  list.addEventListener('drop', function() {
+    console.log('drop');
+    if (draggedItem) {
+      // eslint-disable-next-line no-use-before-define
+      send(draggedItem.id.slice(5), this.id.slice(4));
 
-      list.addEventListener('dragover', e => {
-        e.preventDefault();
-      });
-
-      list.addEventListener('dragenter', function(e) {
-        e.preventDefault();
-        this.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
-      });
-
-      list.addEventListener('dragleave', function() {
-        this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-      });
-
-      list.addEventListener('drop', function() {
-        console.log('drop');
-        if (draggedItem) {
-          const btn = Object.assign(this.lastElementChild);
-          this.lastElementChild.remove();
-          this.append(draggedItem);
-          this.append(btn);
-        }
-        this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-      });
+      const btn = Object.assign(this.lastElementChild);
+      this.lastElementChild.remove();
+      this.append(draggedItem);
+      this.append(btn);
     }
-  }
+    this.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+  });
+}
+
+function send(cardID, columnID) {
+  axios
+    .put('/api/card', {
+      cardID,
+      columnID,
+    })
+    .then(res => {
+      console.log(res);
+    })
+    .catch(e => {
+      console.error(e);
+    });
 }
