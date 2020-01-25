@@ -7,7 +7,7 @@ CREATE TABLE cards (
   card_id SERIAL NOT NULL PRIMARY KEY,
   card_title TEXT,
   card_description TEXT,
-  created_at TIMESTAMP DEFAULT NOW(),
+  created_at DATE DEFAULT NOW(),
   column_id INT NOT NULL,
   FOREIGN KEY (column_id)
     REFERENCES columns (column_id)

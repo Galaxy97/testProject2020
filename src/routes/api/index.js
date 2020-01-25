@@ -1,37 +1,33 @@
 const Router = require('koa-router');
 
-const db = require('../../db');
+const services = require('./services');
 
 const router = new Router();
 
 router.get('/api/columns', async ctx => {
-  const data = await db.query(`SELECT * FROM columns;`);
-  ctx.type = 'application/json';
-  ctx.ok(data.rows);
+  try {
+    const data = await services.getAllColumn();
+    ctx.ok(data);
+  } catch (error) {
+    ctx.internalServerError();
+  }
 });
+
 router.get('/api/cards', async ctx => {
-  const data = await db.query(`SELECT * FROM cards ORDER BY column_id;`);
-  const objResponse = {};
-  data.rows.forEach(row => {
-    // eslint-disable-next-line no-prototype-builtins
-    if (!objResponse.hasOwnProperty(row.column_id))
-      objResponse[row.column_id] = [];
-    objResponse[row.column_id].push(row);
-  });
-  ctx.type = 'application/json';
-  ctx.ok(objResponse);
+  try {
+    const data = await services.getAllCard();
+    ctx.ok(data);
+  } catch (err) {
+    ctx.internalServerError();
+  }
 });
+
 // create new column
 router.post('/api/column', async ctx => {
   try {
     const {ownName} = ctx.request.body;
-    // write in table colomns
-    const res = await db.query(
-      `INSERT INTO columns(own_name) VALUES('${ownName}') RETURNING column_id ;`,
-    );
-    ctx.ok({
-      id: res.rows[0].column_id,
-    });
+    const id = await services.createNewColumn(ownName);
+    ctx.ok({id});
   } catch (err) {
     ctx.internalServerError();
   }
@@ -41,37 +37,50 @@ router.post('/api/column', async ctx => {
 router.post('/api/card', async ctx => {
   try {
     const {colomnID, title, description} = ctx.request.body;
-    // write in table colomns
-    const res = await db.query(
-      `INSERT INTO cards(column_id,card_title,card_description) VALUES('${colomnID}','${title}','${description}') RETURNING card_id,created_at ;`,
-    );
-    ctx.ok(res.rows[0]);
+    const data = await services.createNewCard({colomnID, title, description});
+    ctx.ok(data);
   } catch (err) {
-    ctx.internalServerError(err);
+    ctx.internalServerError();
   }
 });
+// edit column
+router.patch('/api/column', async ctx => {
+  try {
+    const {newTitle, id} = ctx.request.body;
+    await services.updateColumn({newTitle, id});
+    ctx.ok();
+  } catch (err) {
+    ctx.internalServerError();
+  }
+});
+// edit card
+router.patch('/api/card', async ctx => {
+  try {
+    const {newTitle, newDesc, newDate, id} = ctx.request.body;
+    await services.updateCard({newTitle, newDesc, newDate, id});
+    ctx.ok();
+  } catch (err) {
+    ctx.internalServerError();
+  }
+});
+
 // move card
 router.put('/api/card', async ctx => {
   try {
     const {cardID, columnID} = ctx.request.body;
     // change columnID for concrete card
-    const res = await db.query(
-      `UPDATE cards SET column_id = ${columnID} WHERE card_id = ${cardID} RETURNING column_id;`,
-    );
-    ctx.ok({
-      id: res.rows[0].column_id,
-    });
+    const id = await services.moveCard({cardID, columnID});
+    ctx.ok({id});
   } catch (err) {
     ctx.internalServerError(err);
   }
 });
 
-// create new column
 router.delete('/api/column', async ctx => {
   try {
     const id = ctx.headers.column_id;
     // delete colomns
-    await db.query(`DELETE FROM columns WHERE column_id = ${id};`);
+    await services.deleteColumn(id);
     ctx.ok();
   } catch (err) {
     ctx.internalServerError();
@@ -82,7 +91,7 @@ router.delete('/api/card', async ctx => {
   try {
     const id = ctx.headers.card_id;
     // delete colomns
-    await db.query(`DELETE FROM cards WHERE card_id = ${id};`);
+    await services.deleteCard(id);
     ctx.ok();
   } catch (err) {
     ctx.internalServerError();
