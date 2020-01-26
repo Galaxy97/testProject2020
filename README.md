@@ -1,3 +1,9 @@
+Server: NodeJS
+
+Framework : Koa
+
+Database : PostgreSQL
+
 requiments:
   database PostgreSQL
   database name 'board'
