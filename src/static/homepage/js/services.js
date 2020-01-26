@@ -122,7 +122,7 @@ function createColomn() {
   // eslint-disable-next-line no-undef
   const createColomnButton = document.createElement('button');
   createColomnDiv.append(createColomnButton);
-  createColomnButton.innerText = '+ Add new colomn';
+  createColomnButton.innerText = '+ Add new column';
   createColomnButton.onclick = () => {
     createColomnButton.remove();
     // eslint-disable-next-line no-undef
