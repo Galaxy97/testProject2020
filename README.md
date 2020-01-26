@@ -5,10 +5,12 @@ requiments:
   database user 'postgres'
   application will create table columns and cards
 
-![create new column](link-to-image)
+![create new column]
+(/screens/newColumn.png)
 
 Columns have their own name, which can be edited.
-![create new column](link-to-image)
+![create new column]
+(link-to-image)
 User can create, delete columns.
 ![edit own name column](link-to-image)
 ![delete column](link-to-image)
