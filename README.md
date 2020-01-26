@@ -5,8 +5,7 @@ requiments:
   database user 'postgres'
   application will create table columns and cards
 
-![create new column]
-(https://github.com/Galaxy97/testProject2020/blob/master/screens/newColumn.png)
+![create new column](https://github.com/Galaxy97/testProject2020/blob/master/screens/newColumn.png)
 
 Columns have their own name, which can be edited.
 ![create new column]
