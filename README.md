@@ -5,20 +5,32 @@ requiments:
   database user 'postgres'
   application will create table columns and cards
 
-![create new column](https://github.com/Galaxy97/testProject2020/blob/master/screens/newColumn.png)
+![](https://github.com/Galaxy97/testProject2020/blob/master/screens/home.png)
 
 Columns have their own name, which can be edited.
-![create new column]
-(link-to-image)
+
+![create new column](https://github.com/Galaxy97/testProject2020/blob/master/screens/newColumn.png)
+
 User can create, delete columns.
-![edit own name column](link-to-image)
-![delete column](link-to-image)
+
+![edit own name column](https://github.com/Galaxy97/testProject2020/blob/master/screens/editcolumn.png)
+
+![delete column](https://github.com/Galaxy97/testProject2020/blob/master/screens/deleteColumn.png)
+
 User can add a new card to a column
-![create card](link-to-image)
+
+![create card](https://github.com/Galaxy97/testProject2020/blob/master/screens/createCard.png)
+
 Task consists of the name, description, date of creation, all data can be edited.
-![card](link-to-image)
-![edit card](link-to-image)
+
+![card](https://github.com/Galaxy97/testProject2020/blob/master/screens/showNewCard.png)
+
+![edit card](https://github.com/Galaxy97/testProject2020/blob/master/screens/editCard.png)
+
 User can delete card
-![delete](link-to-image)
+
+![delete](https://github.com/Galaxy97/testProject2020/blob/master/screens/deleteCard.png)
+
 User can move task to another column.
-![moving card](link-to-image)
+
+![moving card](https://github.com/Galaxy97/testProject2020/blob/master/screens/movingCard.png)
