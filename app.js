@@ -4,7 +4,7 @@ const koaBody = require('koa-body');
 const respond = require('koa-respond');
 
 const db = require('./src/db');
-const routes = require('./src/routes.js');
+const routes = require('./src/routes');
 
 // db connection
 db.start()
