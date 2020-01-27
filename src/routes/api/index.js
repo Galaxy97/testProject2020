@@ -4,6 +4,7 @@ const services = require('./services');
 
 const router = new Router();
 
+// get all columns
 router.get('/api/columns', async ctx => {
   try {
     const data = await services.getAllColumn();
@@ -13,6 +14,7 @@ router.get('/api/columns', async ctx => {
   }
 });
 
+// get all cards
 router.get('/api/cards', async ctx => {
   try {
     const data = await services.getAllCard();
@@ -76,6 +78,7 @@ router.put('/api/card', async ctx => {
   }
 });
 
+// delete column
 router.delete('/api/column', async ctx => {
   try {
     const id = ctx.headers.column_id;
@@ -86,7 +89,8 @@ router.delete('/api/column', async ctx => {
     ctx.internalServerError();
   }
 });
-// create new column
+
+// delete card
 router.delete('/api/card', async ctx => {
   try {
     const id = ctx.headers.card_id;
