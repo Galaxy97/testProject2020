@@ -66,6 +66,18 @@ router.patch('/api/card', async ctx => {
   }
 });
 
+// move column
+router.put('/api/column', async ctx => {
+  try {
+    const {columnID, newPlace} = ctx.request.body;
+    // moving column
+    await services.moveColumn({columnID, newPlace});
+    ctx.ok();
+  } catch (err) {
+    ctx.internalServerError(err);
+  }
+});
+
 // move card
 router.put('/api/card', async ctx => {
   try {
@@ -83,7 +95,7 @@ router.delete('/api/column', async ctx => {
   try {
     const id = ctx.headers.column_id;
     // delete colomns
-    await services.deleteColumn(id);
+    await services.deleteColumn(Number(id));
     ctx.ok();
   } catch (err) {
     ctx.internalServerError();

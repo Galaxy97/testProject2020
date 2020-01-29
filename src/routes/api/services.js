@@ -2,7 +2,7 @@ const db = require('../../db');
 
 module.exports.getAllColumn = async () => {
   try {
-    const data = await db.query(`SELECT * FROM columns ORDER BY column_id;`);
+    const data = await db.query(`SELECT * FROM columns ORDER BY show_num;`);
     return data.rows;
   } catch (error) {
     return error;
@@ -27,8 +27,16 @@ module.exports.getAllCard = async () => {
 
 module.exports.createNewColumn = async ownName => {
   try {
+    let getColNum = await db.query(
+      `SELECT config.show_id FROM config WHERE type_of = 'column';`,
+    );
+    getColNum = getColNum.rows[0].show_id;
     const res = await db.query(
-      `INSERT INTO columns(own_name) VALUES('${ownName}') RETURNING column_id ;`,
+      `INSERT INTO columns(own_name,show_num) VALUES('${ownName}', '${getColNum}') RETURNING column_id ;`,
+    );
+    await db.query(
+      `UPDATE config SET show_id = '${getColNum +
+        1}' WHERE type_of = 'column';`,
     );
     return res.rows[0].column_id;
   } catch (error) {
@@ -63,6 +71,31 @@ module.exports.updateCard = async ({newTitle, newDesc, newDate, id}) => {
   );
 };
 
+module.exports.moveColumn = async ({columnID, newPlace}) => {
+  const turn = [];
+  const getAllColumn = await this.getAllColumn();
+  getAllColumn.forEach(row => {
+    turn.push(row.column_id);
+  });
+  // --
+  const oldPlace = turn.indexOf(columnID);
+  const t = turn.splice(oldPlace, 1);
+  turn.splice(newPlace, 0, t[0]);
+  // --
+  await db.query(
+    `UPDATE columns SET show_num = '${0}' WHERE column_id = ${turn[newPlace]};`,
+  );
+  // eslint-disable-next-line no-plusplus
+  for (let index = 0; index < turn.length; index++) {
+    // eslint-disable-next-line no-await-in-loop
+    await db.query(
+      `UPDATE columns SET show_num = '${index + 1}' WHERE column_id = ${
+        turn[index]
+      };`,
+    );
+  }
+};
+
 module.exports.moveCard = async ({cardID, columnID}) => {
   const res = await db.query(
     `UPDATE cards SET column_id = ${columnID} WHERE card_id = ${cardID} RETURNING column_id;`,
@@ -71,7 +104,34 @@ module.exports.moveCard = async ({cardID, columnID}) => {
 };
 
 module.exports.deleteColumn = async id => {
+  const turn = [];
+  const getAllColumn = await this.getAllColumn();
+  getAllColumn.forEach(row => {
+    turn.push(row.column_id);
+  });
+  // --
+  let getColNum = await db.query(
+    `SELECT config.show_id FROM config WHERE type_of = 'column';`,
+  );
+  getColNum = getColNum.rows[0].show_id;
+  // --
   await db.query(`DELETE FROM columns WHERE column_id = ${id};`);
+  let index = turn.indexOf(id);
+  turn.splice(index, 1);
+  // --
+  // eslint-disable-next-line no-plusplus
+  for (; index < turn.length; index++) {
+    // eslint-disable-next-line no-await-in-loop
+    await db.query(
+      `UPDATE columns SET show_num = '${index + 1}' WHERE column_id = ${
+        turn[index]
+      };`,
+    );
+  }
+  // --
+  await db.query(
+    `UPDATE config SET show_id = '${getColNum - 1}' WHERE type_of = 'column';`,
+  );
 };
 
 module.exports.deleteCard = async id => {

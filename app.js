@@ -8,7 +8,7 @@ const routes = require('./src/routes');
 
 // db connection
 db.start()
-  .then(() => {
+  .then(async () => {
     console.log('connect');
     // create server
     const app = new Koa();
@@ -25,3 +25,15 @@ db.start()
     // console.log('server successful start on localhost port 3000');
   })
   .catch(e => console.log(e));
+// const arr = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+// const oldPlace = arr.indexOf('3');
+// const newPlace = 8;
+
+// const t = arr.splice(oldPlace, 1);
+// arr.splice(newPlace, 0, t[0]);
+
+// // const arr = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+// // let index = arr.indexOf('3');
+
+// // arr.splice(index, 1);
