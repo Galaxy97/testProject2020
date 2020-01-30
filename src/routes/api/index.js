@@ -71,7 +71,7 @@ router.put('/api/column', async ctx => {
   try {
     const {columnID, newPlace} = ctx.request.body;
     // moving column
-    await services.moveColumn({columnID, newPlace});
+    await services.moveColumn({columnID: Number(columnID), newPlace});
     ctx.ok();
   } catch (err) {
     ctx.internalServerError(err);

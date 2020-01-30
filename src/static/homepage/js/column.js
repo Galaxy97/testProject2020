@@ -67,6 +67,7 @@ const Column = {
     // drag tegs
     column.setAttribute('draggable', true);
     this.process(column);
+    this.editColumn(column);
   },
   showColumn(col) {
     // eslint-disable-next-line no-undef
@@ -82,7 +83,86 @@ const Column = {
     columnTitle.innerText = col.own_name;
     // drag tegs
     column.setAttribute('draggable', true);
+    this.editColumn(column);
     this.process(column);
+  },
+  editColumn(element) {
+    // eslint-disable-next-line no-undef
+    const div = document.createElement('div');
+    element.append(div);
+    // eslint-disable-next-line no-undef
+    const edit = document.createElement('button');
+    div.append(edit);
+    edit.innerText = 'edit';
+    edit.onclick = () => {
+      // for column --------------------------------------------- COLUMN EDIT
+      const originalEDIT = Object.assign(div.childNodes[0]);
+      const originalCanc = Object.assign(div.childNodes[1]);
+      div.innerHTML = '';
+      const oldTitle = element.childNodes[0].innerText;
+      // eslint-disable-next-line no-param-reassign
+      element.childNodes[0].innerHTML = '';
+      // eslint-disable-next-line no-undef
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = oldTitle;
+      element.childNodes[0].append(input);
+      // ----------------------------------------------- create save button
+      // eslint-disable-next-line no-undef
+      const save = document.createElement('button');
+      div.append(save);
+      save.innerText = 'save it';
+      save.onclick = () => {
+        // eslint-disable-next-line no-undef
+        axios
+          .patch('/api/column', {
+            id: element.id.slice(4),
+            newTitle: input.value,
+          })
+          .then(() => {
+            // eslint-disable-next-line no-param-reassign
+            element.childNodes[0].innerHTML = input.value;
+            div.innerHTML = '';
+            div.append(originalEDIT);
+            div.append(originalCanc);
+          })
+          .catch(e => {
+            console.error(e);
+          });
+      };
+      // ----------------------------------------------- create cancel button
+      // eslint-disable-next-line no-undef
+      const cancel = document.createElement('button');
+      div.append(cancel);
+      cancel.innerText = 'cancel';
+      cancel.onclick = () => {
+        // eslint-disable-next-line no-param-reassign
+        element.childNodes[0].innerHTML = oldTitle;
+        div.innerHTML = '';
+        div.append(originalEDIT);
+        div.append(originalCanc);
+      };
+    };
+    // eslint-disable-next-line no-undef
+    const del = document.createElement('button');
+    div.append(del);
+    del.innerText = 'delete';
+    del.onclick = () => {
+      // eslint-disable-next-line no-undef
+      if (confirm('Do you want delete this?')) {
+        // eslint-disable-next-line no-undef
+        axios
+          .delete('/api/column', {
+            headers: {
+              column_id: element.id.slice(4),
+            },
+          })
+          .then(() => {
+            element.remove();
+          })
+          .catch(e => console.error(e));
+      }
+    };
   },
   process(columnElement) {
     columnElement.addEventListener('dragstart', this.dragstart);

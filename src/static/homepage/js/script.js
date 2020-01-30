@@ -12,8 +12,8 @@ async function run() {
       // eslint-disable-next-line no-undef
       Column.createNewPlace();
     } else {
-      debugger;
       columns.forEach(column => {
+        // eslint-disable-next-line no-undef
         Column.showColumn(column);
       });
       // eslint-disable-next-line no-undef
