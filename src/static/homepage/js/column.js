@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 // eslint-disable-next-line no-unused-vars
 const Column = {
   idCounter: 4,
@@ -69,7 +70,7 @@ const Column = {
     this.process(column);
     this.editColumn(column);
   },
-  showColumn(col) {
+  showColumn(col, cards) {
     // eslint-disable-next-line no-undef
     const listsDiv = document.getElementsByClassName('lists')[0];
     // eslint-disable-next-line no-undef
@@ -83,8 +84,26 @@ const Column = {
     columnTitle.innerText = col.own_name;
     // drag tegs
     column.setAttribute('draggable', true);
+    // eslint-disable-next-line no-undef
+    const divForCards = document.createElement('div');
+    divForCards.className = 'forCards';
     this.editColumn(column);
     this.process(column);
+    // --------------------
+    column.append(divForCards);
+    //
+    if (cards) {
+      cards.forEach(card => {
+        // eslint-disable-next-line no-undef
+        const divCard = Card.createCard(card);
+        // eslint-disable-next-line no-undef
+        divForCards.append(divCard);
+      });
+    }
+    //
+    // eslint-disable-next-line no-undef
+    Card.createPlaceForCard(column);
+    // append div create new card
   },
   editColumn(element) {
     // eslint-disable-next-line no-undef
@@ -175,13 +194,12 @@ const Column = {
     columnElement.addEventListener('drop', this.drop);
   },
   dragstart(event) {
-    console.log('dragstart');
     Column.dragged = this;
     event.stopPropagation();
   },
   dragend() {
-    console.log('dragend');
     Column.dragged = null;
+    Column.dropped = null;
   },
   dragenter() {
     // console.log('dragenter');
@@ -189,13 +207,33 @@ const Column = {
   dragover(event) {
     event.preventDefault();
     event.stopPropagation();
-    // console.log('dragover');
+
+    if (Column.dragged === this) {
+      Column.dropped = null;
+    }
+
+    if (!Column.dragged || Column.dragged === this) {
+      return;
+    }
+
+    Column.dropped = this;
   },
   dragleave() {
     // console.log('dragleave');
   },
-  drop() {
-    console.log('drop');
+  // eslint-disable-next-line consistent-return
+  async drop() {
+    // eslint-disable-next-line no-undef
+    if (Card.dragged) {
+      // eslint-disable-next-line no-undef
+      const insertElement = Card.dragged;
+      // eslint-disable-next-line no-undef
+      const res = await Card.send(Card.dragged.id.slice(5), this.id.slice(4));
+      if (res) {
+        // eslint-disable-next-line no-undef
+        return this.querySelector('.forCards').append(insertElement);
+      }
+    }
     if (Column.dragged) {
       // eslint-disable-next-line no-undef
       const children = Array.from(document.querySelector('.lists').children);

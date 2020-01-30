@@ -8,13 +8,15 @@ async function run() {
       axios.get('/api/cards'),
     ]);
     const columns = response[0].data;
+    const cards = response[1].data;
+    // що, знов дропнув базу і не перезапустив сервер???
     if (columns.length === 0) {
       // eslint-disable-next-line no-undef
       Column.createNewPlace();
     } else {
       columns.forEach(column => {
         // eslint-disable-next-line no-undef
-        Column.showColumn(column);
+        Column.showColumn(column, cards[column.column_id]);
       });
       // eslint-disable-next-line no-undef
       Column.createNewPlace();

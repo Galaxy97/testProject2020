@@ -133,6 +133,7 @@ module.exports.moveCard = async ({cardID, columnID, newPosition}) => {
     // --
     const oldPlace = turn.indexOf(cardID);
     const t = turn.splice(oldPlace, 1);
+    if (!newPosition) turn.push(t[0]);
     turn.splice(newPosition, 0, t[0]);
     // --
     // eslint-disable-next-line no-plusplus
@@ -181,7 +182,8 @@ module.exports.moveCard = async ({cardID, columnID, newPosition}) => {
        WHERE column_id = ${oldColumnID};`,
     );
     // add card into new turn
-    newTurn.splice(newPosition, 0, t[0]);
+    if (!newPosition) newTurn.push(t[0]);
+    else newTurn.splice(newPosition, 0, t[0]);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < newTurn.length; i++) {
       // eslint-disable-next-line no-await-in-loop
