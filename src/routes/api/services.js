@@ -38,16 +38,34 @@ module.exports.createNewColumn = async ownName => {
       `UPDATE config SET show_id = '${getColNum +
         1}' WHERE type_of = 'column';`,
     );
+    // create num position for card
+    await db.query(`INSERT INTO config (type_of,column_id,show_id)
+    VALUES('card', ${res.rows[0].column_id}, 1);`);
     return res.rows[0].column_id;
   } catch (error) {
     return error;
   }
 };
 
-module.exports.createNewCard = async ({colomnID, title, description}) => {
+module.exports.createNewCard = async ({
+  colomnID,
+  title = 'some',
+  description = 'somems',
+}) => {
   try {
+    let getCardNum = await db.query(
+      `SELECT config.show_id FROM config WHERE column_id = '${colomnID}';`,
+    );
+    getCardNum = getCardNum.rows[0].show_id;
     const res = await db.query(
-      `INSERT INTO cards(column_id,card_title,card_description) VALUES('${colomnID}','${title}','${description}') RETURNING card_id,created_at ;`,
+      `INSERT INTO
+       cards(column_id,card_title,card_description,show_num)
+       VALUES('${colomnID}','${title}','${description}','${getCardNum}')
+       RETURNING card_id,created_at ;`,
+    );
+    await db.query(
+      `UPDATE config SET show_id= '${getCardNum + 1}'
+       WHERE column_id = '${colomnID}';`,
     );
     return res.rows[0];
   } catch (error) {
