@@ -146,7 +146,7 @@ module.exports.moveCard = async ({cardID, columnID, newPosition}) => {
     }
   } else {
     // another column
-    // cards in old clumn
+    // cards in old column
     const oldCards = await db.query(
       `SELECT * FROM cards WHERE column_id = ${oldColumnID} ORDER BY show_num`,
     );
@@ -232,5 +232,42 @@ module.exports.deleteColumn = async id => {
 };
 
 module.exports.deleteCard = async id => {
+  // get card by id
+  const card = await db.query(`SELECT * FROM cards WHERE card_id = ${id};`);
+  // get all card in that column
+  const cards = await db.query(
+    `SELECT * FROM cards WHERE column_id = ${card.rows[0].column_id}
+     ORDER BY show_num;`,
+  );
+  // --
+  let getColNum = await db.query(
+    `SELECT config.show_id FROM config WHERE column_id = ${card.rows[0].column_id};`,
+  );
+  getColNum = getColNum.rows[0].show_id;
+  // --
   await db.query(`DELETE FROM cards WHERE card_id = ${id};`);
+  const turn = [];
+  cards.rows.forEach(element => {
+    turn.push(element.card_id);
+  });
+  console.log(turn);
+  let index = turn.indexOf(id);
+  turn.splice(index, 1);
+
+  // eslint-disable-next-line no-plusplus
+  for (; index < turn.length; index++) {
+    // eslint-disable-next-line no-await-in-loop
+    await db.query(
+      `UPDATE cards SET show_num = '${index + 1}' WHERE card_id = ${
+        turn[index]
+      };`,
+    );
+  }
+  // --
+  await db.query(
+    `UPDATE config SET show_id = '${getColNum - 1}'
+     WHERE column_id = ${card.rows[0].column_id};`,
+  );
+
+  // await db.query(`DELETE FROM cards WHERE card_id = ${id};`);
 };

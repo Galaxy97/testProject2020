@@ -107,7 +107,7 @@ router.delete('/api/card', async ctx => {
   try {
     const id = ctx.headers.card_id;
     // delete colomns
-    await services.deleteCard(id);
+    await services.deleteCard(Number(id));
     ctx.ok();
   } catch (err) {
     ctx.internalServerError();
