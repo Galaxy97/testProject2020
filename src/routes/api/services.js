@@ -131,12 +131,10 @@ module.exports.moveCard = async ({cardID, columnID, newPosition}) => {
       turn.push(card.card_id);
     });
     // --
-    console.log(turn);
     const oldPlace = turn.indexOf(cardID);
     const t = turn.splice(oldPlace, 1);
     turn.splice(newPosition, 0, t[0]);
     // --
-    console.log(turn);
     // eslint-disable-next-line no-plusplus
     for (let index = 0; index < turn.length; index++) {
       // eslint-disable-next-line no-await-in-loop
@@ -146,14 +144,60 @@ module.exports.moveCard = async ({cardID, columnID, newPosition}) => {
         };`,
       );
     }
-    console.log('eeee');
   } else {
     // another column
+    // cards in old clumn
+    const oldCards = await db.query(
+      `SELECT * FROM cards WHERE column_id = ${oldColumnID} ORDER BY show_num`,
+    );
+    // cards in new column
+    const newCards = await db.query(
+      `SELECT * FROM cards WHERE column_id = ${columnID} ORDER BY show_num`,
+    );
+    const oldTurn = [];
+    const newTurn = [];
+    oldCards.rows.forEach(card => {
+      oldTurn.push(card.card_id);
+    });
+    newCards.rows.forEach(card => {
+      newTurn.push(card.card_id);
+    });
+    // delete card from old turn
+    const index = oldTurn.indexOf(cardID);
+    const t = oldTurn.splice(index, 1);
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < oldTurn.length; i++) {
+      // eslint-disable-next-line no-await-in-loop
+      await db.query(
+        `UPDATE cards SET show_num = ${i + 1} WHERE card_id = ${oldTurn[i]};`,
+      );
+    }
+    // update in config amount of carsd show id
+    const oldColNum = await db.query(
+      `SELECT config.show_id FROM config WHERE column_id = ${oldColumnID};`,
+    );
+    await db.query(
+      `UPDATE config SET show_id = ${oldColNum.rows[0].show_id - 1}
+       WHERE column_id = ${oldColumnID};`,
+    );
+    // add card into new turn
+    newTurn.splice(newPosition, 0, t[0]);
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < newTurn.length; i++) {
+      // eslint-disable-next-line no-await-in-loop
+      await db.query(
+        `UPDATE cards SET show_num = ${i + 1}, column_id = ${columnID}
+         WHERE card_id = ${newTurn[i]};`,
+      );
+    }
+    const newColNum = await db.query(
+      `SELECT config.show_id FROM config WHERE column_id = ${columnID};`,
+    );
+    await db.query(
+      `UPDATE config SET show_id = ${newColNum.rows[0].show_id + 1}
+       WHERE column_id = ${columnID};`,
+    );
   }
-  // const res = await db.query(
-  //   `UPDATE cards SET column_id = ${columnID} WHERE card_id = ${cardID} RETURNING column_id;`,
-  // );
-  return res.rows[0].column_id;
 };
 
 module.exports.deleteColumn = async id => {
