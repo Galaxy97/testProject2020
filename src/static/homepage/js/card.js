@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-param-reassign */
 const Card = {
   idCounter: 8,
   dragged: null,
@@ -90,7 +92,7 @@ const Card = {
       .toLocaleString()
       .slice(0, 10);
     // eslint-disable-next-line no-use-before-define
-    // controlDiv(card);
+    Card.controlDiv(card);
     // eslint-disable-next-line no-undef
     Card.process(card);
     return card;
@@ -161,5 +163,123 @@ const Card = {
       console.error(error);
       return false;
     }
+  },
+  controlDiv(element) {
+    // eslint-disable-next-line no-undef
+    const div = document.createElement('div');
+    element.append(div);
+    // eslint-disable-next-line no-undef
+    const edit = document.createElement('button');
+    div.append(edit);
+    edit.innerText = 'edit';
+    edit.onclick = () => {
+      // -------------------------------------------------------- CARD EDIT
+      const originalEDIT = Object.assign(div.childNodes[0]);
+      const originalCanc = Object.assign(div.childNodes[1]);
+      div.innerHTML = '';
+      const oldTitle = element.childNodes[0].innerText;
+      const oldDesc = element.childNodes[1].innerText;
+      const oldDate = element.childNodes[2].innerText;
+      const date = oldDate.split('.');
+      const dateVal = `${date[2]}-${date[1]}-${date[0]}`;
+      // -----------------------------------TITLE
+      element.childNodes[0].innerHTML = '';
+      // eslint-disable-next-line no-undef
+      const title = document.createElement('textarea');
+      title.value = oldTitle;
+      element.childNodes[0].append(title);
+      // ----------------------------------END TITLE
+      // ----------------------------------DESCRIPTION
+      element.childNodes[1].innerHTML = '';
+      // eslint-disable-next-line no-undef
+      const desc = document.createElement('textarea');
+      desc.value = oldDesc;
+      element.childNodes[1].append(desc);
+      // ----------------------------------END DESCRIPTION
+      // ----------------------------------DATE
+      // debugger
+      element.childNodes[2].innerHTML = '';
+      // eslint-disable-next-line no-undef
+      const dateInput = document.createElement('input');
+      dateInput.type = 'date';
+      dateInput.value = dateVal;
+      element.childNodes[2].append(dateInput);
+      // ----------------------------------END DATE
+      // -------------------------------------- control buttonS
+      // ----------------------------------------------- create save button
+      // eslint-disable-next-line no-undef
+      const save = document.createElement('button');
+      div.append(save);
+      save.innerText = 'save it';
+      save.onclick = () => {
+        // eslint-disable-next-line no-undef
+        axios
+          .patch('/api/card', {
+            id: element.id.slice(5),
+            newTitle: title.value,
+            newDesc: desc.value,
+            newDate: new Date(dateInput.value).getTime(),
+          })
+          .then(() => {
+            // eslint-disable-next-line no-param-reassign
+            element.childNodes[0].innerText = title.value;
+            element.childNodes[1].innerText = desc.value;
+            element.childNodes[2].innerText = dateInput.value;
+            div.innerHTML = '';
+            div.append(originalEDIT);
+            div.append(originalCanc);
+          })
+          .catch(e => {
+            console.error(e);
+          });
+      };
+      // ----------------------------------------------- create cancel button
+      // eslint-disable-next-line no-undef
+      const cancel = document.createElement('button');
+      div.append(cancel);
+      cancel.innerText = 'cancel';
+      cancel.onclick = () => {
+        element.childNodes[0].innerText = oldTitle;
+        element.childNodes[1].innerText = oldDesc;
+        element.childNodes[2].innerText = oldDate;
+        div.innerHTML = '';
+        div.append(originalEDIT);
+        div.append(originalCanc);
+      };
+    };
+    // eslint-disable-next-line no-undef
+    const del = document.createElement('button');
+    div.append(del);
+    del.innerText = 'delete';
+    del.onclick = () => {
+      // eslint-disable-next-line no-undef
+      if (confirm('Do you want delete this?')) {
+        if (element.id.slice(0, 4) === 'card') {
+          // eslint-disable-next-line no-undef
+          axios
+            .delete('/api/card', {
+              headers: {
+                card_id: element.id.slice(5),
+              },
+            })
+            .then(() => {
+              element.remove();
+            })
+            .catch(e => console.error(e));
+        } else {
+          // eslint-disable-next-line no-undef
+          axios
+            .delete('/api/column', {
+              headers: {
+                column_id: element.id.slice(4),
+              },
+            })
+            .then(() => {
+              element.remove();
+            })
+            .catch(e => console.error(e));
+        }
+      }
+    };
   },
 };

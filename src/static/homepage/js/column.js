@@ -67,8 +67,14 @@ const Column = {
     columnTitle.innerText = col.title;
     // drag tegs
     column.setAttribute('draggable', true);
-    this.process(column);
+    // eslint-disable-next-line no-undef
+    const divForCards = document.createElement('div');
+    divForCards.className = 'forCards';
     this.editColumn(column);
+    this.process(column);
+    column.append(divForCards);
+    // eslint-disable-next-line no-undef
+    Card.createPlaceForCard(column);
   },
   showColumn(col, cards) {
     // eslint-disable-next-line no-undef
@@ -101,9 +107,9 @@ const Column = {
       });
     }
     //
+    // append div create new card
     // eslint-disable-next-line no-undef
     Card.createPlaceForCard(column);
-    // append div create new card
   },
   editColumn(element) {
     // eslint-disable-next-line no-undef
@@ -187,7 +193,6 @@ const Column = {
     columnElement.addEventListener('dragstart', this.dragstart);
     columnElement.addEventListener('dragend', this.dragend);
 
-    columnElement.addEventListener('dragenter', this.dragenter);
     columnElement.addEventListener('dragover', this.dragover);
     columnElement.addEventListener('dragleave', this.dragleave);
 
@@ -200,9 +205,6 @@ const Column = {
   dragend() {
     Column.dragged = null;
     Column.dropped = null;
-  },
-  dragenter() {
-    // console.log('dragenter');
   },
   dragover(event) {
     event.preventDefault();
