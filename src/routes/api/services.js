@@ -100,9 +100,9 @@ module.exports.moveColumn = async ({columnID, newPlace}) => {
   const t = turn.splice(oldPlace, 1);
   turn.splice(newPlace, 0, t[0]);
   // --
-  await db.query(
-    `UPDATE columns SET show_num = '${0}' WHERE column_id = ${turn[newPlace]};`,
-  );
+  // await db.query(
+  //   `UPDATE columns SET show_num = '${0}' WHERE column_id = ${turn[newPlace]};`,
+  // );
   // eslint-disable-next-line no-plusplus
   for (let index = 0; index < turn.length; index++) {
     // eslint-disable-next-line no-await-in-loop
@@ -114,10 +114,45 @@ module.exports.moveColumn = async ({columnID, newPlace}) => {
   }
 };
 
-module.exports.moveCard = async ({cardID, columnID}) => {
-  const res = await db.query(
-    `UPDATE cards SET column_id = ${columnID} WHERE card_id = ${cardID} RETURNING column_id;`,
+module.exports.moveCard = async ({cardID, columnID, newPosition}) => {
+  // get info abour card
+  const cardInfo = await db.query(
+    `SELECT * FROM cards WHERE card_id = ${cardID}`,
   );
+  const oldColumnID = cardInfo.rows[0].column_id;
+  if (columnID === oldColumnID) {
+    // if same column
+    // get all card in this column
+    const cards = await db.query(
+      `SELECT * FROM cards WHERE column_id = '${columnID}' ORDER BY show_num`,
+    );
+    const turn = [];
+    cards.rows.forEach(card => {
+      turn.push(card.card_id);
+    });
+    // --
+    console.log(turn);
+    const oldPlace = turn.indexOf(cardID);
+    const t = turn.splice(oldPlace, 1);
+    turn.splice(newPosition, 0, t[0]);
+    // --
+    console.log(turn);
+    // eslint-disable-next-line no-plusplus
+    for (let index = 0; index < turn.length; index++) {
+      // eslint-disable-next-line no-await-in-loop
+      await db.query(
+        `UPDATE cards SET show_num = '${index + 1}' WHERE card_id = ${
+          turn[index]
+        };`,
+      );
+    }
+    console.log('eeee');
+  } else {
+    // another column
+  }
+  // const res = await db.query(
+  //   `UPDATE cards SET column_id = ${columnID} WHERE card_id = ${cardID} RETURNING column_id;`,
+  // );
   return res.rows[0].column_id;
 };
 

@@ -81,9 +81,9 @@ router.put('/api/column', async ctx => {
 // move card
 router.put('/api/card', async ctx => {
   try {
-    const {cardID, columnID} = ctx.request.body;
+    const {cardID, columnID, newPosition} = ctx.request.body;
     // change columnID for concrete card
-    const id = await services.moveCard({cardID, columnID});
+    const id = await services.moveCard({cardID, columnID, newPosition});
     ctx.ok({id});
   } catch (err) {
     ctx.internalServerError(err);
