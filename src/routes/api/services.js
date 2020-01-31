@@ -27,13 +27,16 @@ module.exports.getAllCard = async () => {
 
 module.exports.createNewColumn = async ownName => {
   try {
+    // get last number of columns
     let getColNum = await db.query(
       `SELECT config.show_id FROM config WHERE type_of = 'column';`,
     );
     getColNum = getColNum.rows[0].show_id;
+    // new record
     const res = await db.query(
       `INSERT INTO columns(own_name,show_num) VALUES('${ownName}', '${getColNum}') RETURNING column_id ;`,
     );
+    // increment last number of columns
     await db.query(
       `UPDATE config SET show_id = '${getColNum +
         1}' WHERE type_of = 'column';`,
@@ -99,10 +102,6 @@ module.exports.moveColumn = async ({columnID, newPlace}) => {
   const oldPlace = turn.indexOf(columnID);
   const t = turn.splice(oldPlace, 1);
   turn.splice(newPlace, 0, t[0]);
-  // --
-  // await db.query(
-  //   `UPDATE columns SET show_num = '${0}' WHERE column_id = ${turn[newPlace]};`,
-  // );
   // eslint-disable-next-line no-plusplus
   for (let index = 0; index < turn.length; index++) {
     // eslint-disable-next-line no-await-in-loop
@@ -252,7 +251,6 @@ module.exports.deleteCard = async id => {
   cards.rows.forEach(element => {
     turn.push(element.card_id);
   });
-  console.log(turn);
   let index = turn.indexOf(id);
   turn.splice(index, 1);
 

@@ -66,7 +66,6 @@ const Card = {
         this.createPlaceForCard(column);
       };
     };
-    // Card.process(noteElement);
   },
   createCard(cardInfo) {
     // eslint-disable-next-line no-undef
@@ -113,7 +112,6 @@ const Card = {
   },
 
   async drop(event) {
-    // debugger;
     if (Card.dragged === null) {
       return;
     }
@@ -121,7 +119,6 @@ const Card = {
       return;
     }
     event.stopPropagation();
-    // debugger;
     const insertElem = Card.dragged;
     if (this.parentElement === Card.dragged.parentElement) {
       const note = Array.from(this.parentElement.childNodes);
@@ -134,7 +131,6 @@ const Card = {
         indexA,
       );
       if (res) {
-        // debugger;
         if (indexA < indexB) {
           this.parentElement.insertBefore(insertElem, this);
         } else {
@@ -146,7 +142,6 @@ const Card = {
         Card.dragged.id.slice(5),
         this.closest('.list').id.slice(4),
       );
-      // debugger;
       if (res) this.parentElement.insertBefore(insertElem, this);
     }
   },
@@ -197,7 +192,6 @@ const Card = {
       element.childNodes[1].append(desc);
       // ----------------------------------END DESCRIPTION
       // ----------------------------------DATE
-      // debugger
       element.childNodes[2].innerHTML = '';
       // eslint-disable-next-line no-undef
       const dateInput = document.createElement('input');

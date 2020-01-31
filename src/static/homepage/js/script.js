@@ -22,8 +22,6 @@ async function run() {
       Column.createNewPlace();
       // show columns
     }
-
-    console.log(response);
   } catch (error) {
     console.error(error);
     throw error;

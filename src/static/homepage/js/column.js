@@ -194,7 +194,6 @@ const Column = {
     columnElement.addEventListener('dragend', this.dragend);
 
     columnElement.addEventListener('dragover', this.dragover);
-    columnElement.addEventListener('dragleave', this.dragleave);
 
     columnElement.addEventListener('drop', this.drop);
   },
@@ -220,9 +219,6 @@ const Column = {
 
     Column.dropped = this;
   },
-  dragleave() {
-    // console.log('dragleave');
-  },
   // eslint-disable-next-line consistent-return
   async drop() {
     // eslint-disable-next-line no-undef
@@ -242,7 +238,6 @@ const Column = {
       const indexA = children.indexOf(this);
       const indexB = children.indexOf(Column.dragged);
       const draggedObj = Column.dragged; // Event loop)))
-      console.log(Column.dragged.id.slice(4), indexA);
       // eslint-disable-next-line no-undef
       axios
         .put('/api/column', {
